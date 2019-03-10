@@ -1,5 +1,5 @@
 FOR ECHOSERVER : 
-TIME RECORDED IN [10^(-5)] sec
+SERVER RESPONSE TIME RECORDED IN [10^(-5)] sec
 
 | # Clients | ClientA | ClientB | ClientC | ClientD | ClientE |
 |-----------|---------|---------|---------|---------|---------|
@@ -11,7 +11,7 @@ TIME RECORDED IN [10^(-5)] sec
 
 
 FOR DATABASESERVER : 
-TIME RECORDED IN [10^(-5)]sec
+SERVER RESPONSE TIME RECORDED IN [10^(-5)] sec
 
 | # Clients | ClientA | ClientB | ClientC | ClientD | ClientE |
 |-----------|---------|---------|---------|---------|---------|
