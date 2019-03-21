@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 char n[20];
-sem_t len;
+sem_t len[2];
 
 
 int myStrStr(char * str, char * sub)
@@ -34,19 +34,15 @@ int myStrStr(char * str, char * sub)
 	
 	return flag;
 }
+
+
 void * read1(void* data)
 {
 	//while(1){
 			
 			printf("Searching prefix:%s\n", data);
 			printf("Waiting for string from user (enter any string)\n");
-			sem_wait(&len);
-
-			
-			//printf(" Received data is ==== : %s\n",n);
-			//logic implementation is here 
-			//printf("Received sub string is ==== : %s\n",n);
-			
+			sem_wait(&len[0]);
 
 			if ( myStrStr(n,data) )
 				printf("yes substring %s found in %s\n", data,n);
@@ -54,25 +50,42 @@ void * read1(void* data)
 				printf("not found\n");
 }
 
+
+
+void * read2(void* data)
+{
+	//while(1){
+			
+			printf("Searching prefix:%s\n", data);
+			printf("Waiting for string from user (enter any string)\n");
+			sem_wait(&len[1]);
+
+			if ( myStrStr(n,data) )
+				printf("yes substring %s found in %s\n", data,n);
+			else 
+				printf("not found\n");
+}
+
+
 int main()
 {
 	
 	//int status;
 	pthread_t tr, tw;
 	int check;
-	char str[20] = "Dear";
-	
+	char str1[20] = "dear";
+	char str2[20] = "jane";
 
 	do {	
-	pthread_create(&tr,NULL,read1, (void *)str);
-	//printf("Pthread value = %d\n", tr);
-
-	//printf("Enter the string whose prefix has to be checked\n");
+	pthread_create(&tr,NULL,read1, (void *)str1);
+	pthread_create(&tw,NULL,read2, (void *)str2);
 	scanf(" %[^\n]s",n);
 
-	sem_post(&len);
+	sem_post(&len[0]);
 	pthread_join(tr,NULL);
 
+	sem_post(&len[1]);
+	pthread_join(tw,NULL);
 	//pthread_join(tw,NULL);
 	printf("Do you want to continue : (1 for YES ; 0 for NO)\n");
 	scanf(" %d", &check);
