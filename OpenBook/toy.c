@@ -3,37 +3,43 @@
 #include <semaphore.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
 int n;
-sem_t len[2];
+sem_t len1[2];
+sem_t len2[2];
+clock_t t;
 
 
-void * read1(void* data)
+void * read1( data)
 {
 		//printf(" Entering inside thread1\n");
 		
 		//generate random number 1 to 7
+		sem_wait(data);
 		int c;
 		c = (rand() % 6) + 1;
-		printf("rv_t1 = %d\n", c);
-		sem_wait(&len[0]);
+		//printf("rv_t1 = %d\n", c);
+		
 		//store in n;
 		n = c;
-
+		sem_wait((data + sizeof(sem_t)) );
 	
 }
 
 
-void * read2(void* data)
+void * read2(  data )
 {
 		//printf(" Entering inside thread2\n");
 		//generate random number 1 to 7
+		sem_wait(data);
 		int d;
 		d = (rand() % 6) + 1;
-		printf("rv_t2 =  %d\n", d);
-		sem_wait(&len[1]);
+		//printf("rv_t2 =  %d\n", d);
+		
 		//store in n;
 		n = d;
-	
+		sem_wait((data + sizeof(sem_t)) );
 }
 
 
@@ -49,39 +55,50 @@ int main()
 
 	do {	
 		//int cmp[2] = {-1,-1};
-
-		printf("iter %d\n", iter);
-		pthread_create(&tr,NULL,read1, NULL);
-		pthread_create(&tw,NULL,read2, NULL);
+		t = clock();
+		void* ptr1 = &len1;
+		void* ptr2 = &len2;
+		pthread_create(&tr,NULL,read1,ptr1);
+		pthread_create(&tw,NULL,read2,ptr2);
 		//scanf(" %[^\n]s",n);
-		if(1)
-		{
-		sem_post(&len[0]);
+		
+		
+		sem_post(&len1[0]);
+		sem_post(&len1[1]);
 		pthread_join(tr,NULL);
-		printf("random value from thread1 is: %d\n" , n); 
+		//printf("random value from thread1 is: %d\n" , n); 
 		//cmp[0] = n;
 		total[0] = total[0] + n; 
-		}
 		
-		if(1) {
-		sem_post(&len[1]);
+		
+		
+		sem_post(&len2[0]);
+		sem_post(&len2[1]);
 		pthread_join(tw,NULL);
-		printf("random value from thread2 is: %d\n" , n);
+		//printf("random value from thread2 is: %d\n" , n);
 		//cmp[1] = n;
 		total[1] = total[1] + n;
-		}
-		
-		iter = iter + 1;
-	
-	}while( (total[0] < 100) && (total[1] < 100) );
+			
 
-	//printf("\nfinal check value is: %d\n" , check);
+		t = clock() - t;
+  		double time_taken = ( ((double)t)/CLOCKS_PER_SEC )*1000; // in milli-seconds  
+		
+		printf("%d , %f\n", iter , time_taken);
+
+
+		iter = iter + 1;
+	}while( (total[0] < 10000) && (total[1] < 10000) );
+
+	
+	/*
 	printf("Total_th1 = %d | Total_th2 = %d\n", total[0], total[1]);
+	
 	printf("Winner is : \t");
 	if(total[0]>total[1])
 		printf("1\n");
 	else
 		printf("2\n");
+	*/
 }
 
 
