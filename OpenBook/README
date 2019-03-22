@@ -1,2 +1,12 @@
  Simulation of co-routine to implement toy version game :  Alternate throwing of a die by two players 
 =====================> FIRST TO SCORE 10,000 CUMULATIVELY WINS <============================
+
+1 iteration = die throws of 2 people one after the other
+
+| # Run | Average Time taken (ms) for each iteration |
+|-----------|---------|
+| 1         |  32.15  |
+| 2         |  31.05  |
+| 3         |  34.89  |
+| 4         |  30.61  |
+| 5         |  31.37  |
