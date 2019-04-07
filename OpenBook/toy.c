@@ -3,7 +3,7 @@
 #include <semaphore.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <sys/time.h>
 
 int n;
 sem_t len1[2];
@@ -16,6 +16,16 @@ void * read1( data)
 		//printf(" Entering inside thread1\n");
 		
 		//generate random number 1 to 7
+		//srand(time(0)); 
+		struct timeval time; 
+     	gettimeofday(&time,NULL);
+
+     // microsecond has 1 000 000
+     // Assuming you did not need quite that accuracy
+     // Also do not assume the system clock has that accuracy.
+     	srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
+
+
 		sem_wait(data);
 		int c;
 		c = (rand() % 6) + 1;
@@ -32,6 +42,15 @@ void * read2(  data )
 {
 		//printf(" Entering inside thread2\n");
 		//generate random number 1 to 7
+		//srand(time(0)+1); 
+		struct timeval time; 
+     	gettimeofday(&time,NULL);
+
+     // microsecond has 1 000 000
+     // Assuming you did not need quite that accuracy
+     // Also do not assume the system clock has that accuracy.
+     	srand((time.tv_sec * 1000) + (time.tv_usec / 1000));
+
 		sem_wait(data);
 		int d;
 		d = (rand() % 6) + 1;
@@ -83,14 +102,14 @@ int main()
 		t = clock() - t;
   		double time_taken = ( ((double)t)/CLOCKS_PER_SEC )*1000; // in milli-seconds  
 		
-		printf("%d , %f\n", iter , time_taken);
+		//printf("%d , %f\n", iter , time_taken);
 
 
 		iter = iter + 1;
-	}while( (total[0] < 10000) && (total[1] < 10000) );
+	}while( (total[0] < 100) && (total[1] < 100) );
 
 	
-	/*
+	
 	printf("Total_th1 = %d | Total_th2 = %d\n", total[0], total[1]);
 	
 	printf("Winner is : \t");
@@ -98,7 +117,7 @@ int main()
 		printf("1\n");
 	else
 		printf("2\n");
-	*/
+	
 }
 
 
