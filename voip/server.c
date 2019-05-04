@@ -81,18 +81,10 @@ if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_PLAYBACK, NULL, "playback", &ss
   }
   printf("Connection accepted...\n");
 
-  //inet_ntop(AF_INET, &(cl_addr.sin_addr), clientAddr, CLADDR_LEN);
-  //if ((childpid = fork()) == 0) { //creating a child process
-
-  // close(sockfd); 
-//stop listening for new connections by the main process. 
-//the child will continue to listen. 
-//the main process now handles the connected client.
-
    
 
    for (;;) {
-    //memset(buffer, 0, BUF_SIZE);
+    
         uint8_t buf[BUF_SIZE];
         rett = recvfrom(newsockfd, &buf, BUF_SIZE, 0, (struct sockaddr *) &cl_addr, &len);
         if(rett < 0) {
@@ -100,30 +92,7 @@ if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_PLAYBACK, NULL, "playback", &ss
          exit(1);
         }
         else {
-        ///////////////////////////////////
-       
- ///////////////////////////////////
-
-
         
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /* Create a new playback stream */
-        
-
-        //for (;;) {
-            
-        /*
-    #if 0
-            pa_usec_t latency;
-
-            if ((latency = pa_simple_get_latency(s, &error)) == (pa_usec_t) -1) {
-                fprintf(stderr, __FILE__": pa_simple_get_latency() failed: %s\n", pa_strerror(error));
-                goto finish;
-            }
-
-            fprintf(stderr, "%0.0f usec    \r", (float)latency);
-    #endif
-    */
           while(1){
                         
                         ssize_t r;
@@ -132,9 +101,7 @@ if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_PLAYBACK, NULL, "playback", &ss
                               break;              
                       }
                       
-                      //printf("Received data from %s: %s\n", clientAddr, buf); 
-                          
-                          /* ... and play it */
+                     
                           if (pa_simple_write(s, buf, sizeof(buf), &error) < 0) {
                               fprintf(stderr, __FILE__": pa_simple_write() failed: %s\n", pa_strerror(error));
                               
@@ -152,17 +119,7 @@ if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_PLAYBACK, NULL, "playback", &ss
 
         
 }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	/*
-    ret = sendto(newsockfd, &buffer, 1, 0, (struct sockaddr *) &cl_addr, len);   
-    if (ret < 0) {  
-     printf("Error sending data!\n");  
-     exit(1);  
-    }  
-    printf("Sent data to %s: %s\n", clientAddr, buffer);
-	*/
-  // }
+  
   }
   close(newsockfd);
  }
