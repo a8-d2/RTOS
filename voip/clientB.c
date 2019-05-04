@@ -1,3 +1,8 @@
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include"stdio.h"  
 #include"stdlib.h"  
 #include"sys/types.h"  
@@ -9,14 +14,15 @@
 #include <arpa/inet.h>
 #include <time.h>
 #include <errno.h>
-#define PORT 4444 
-#define BUF_SIZE 2000 
+
+
 
 #include <pulse/simple.h>
 #include <pulse/error.h>
 #include <pulse/gccmacro.h>
 
-#define BUFSIZE 1024
+#define PORT 4444 
+#define BUF_SIZE 2000 
 
 /* A simple routine calling UNIX write() in a loop */
 static ssize_t loop_write(int fd, const void*data, size_t size) {
@@ -48,6 +54,21 @@ int main(int argc, char**argv) {
 	 struct hostent * server;
 	 char * serverAddr;
 
+	 static const pa_sample_spec ss = {
+		.format = PA_SAMPLE_S16LE,
+		.rate = 44100,
+		.channels = 2
+	 };
+	 pa_simple *s = NULL;
+	 int rett = 1;
+	 int error;
+
+
+	 if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error))) {
+		fprintf(stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror(error));
+		
+	    }
+
 
 	if (argc < 2) {
 	  printf("usage: client < ip address >\n");
@@ -73,79 +94,32 @@ int main(int argc, char**argv) {
 	  printf("Error connecting to the server!\n");  
 	  exit(1);  
 	 }  
-	 //printf("Connected to the server...\n");  
-
-	 //memset(buffer, 0, BUF_SIZE);
-	 //printf("Enter your message(s): ");
 	 
-	//fgets(buffer, BUF_SIZE, stdin) != NULL
-
-
-	//////////////////////////////////////////////////////////////////////////////
-	 
-	/* The sample type to use */
 	 
 	 for (;;) {
-	static const pa_sample_spec ss = {
-		.format = PA_SAMPLE_S16LE,
-		.rate = 44100,
-		.channels = 2
-	 };
-	 pa_simple *s = NULL;
-	 int rett = 1;
-	 int error;
+	
 
 	    /* Create the recording stream */
-	 if (!(s = pa_simple_new(NULL, argv[0], PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error))) {
-		fprintf(stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror(error));
-		goto finish;
-	    }
-
-        uint8_t buf[BUFSIZE];
+	 
+        uint8_t buf[BUF_SIZE];
 
         /* Record some data ... */
          if (pa_simple_read(s, buf, sizeof(buf), &error) < 0) {
             fprintf(stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror(error));
-            goto finish;
+            
         }
 	
-        /* And write it to STDOUT */
-	/*        
-	 if (loop_write(STDOUT_FILENO, buf, sizeof(buf)) != sizeof(buf)) {
-            fprintf(stderr, __FILE__": write() failed: %s\n", strerror(errno));
-            goto finish;
-        }
-    	*/
 
         rett = 0;
 
-finish:
 
-    	if (s)
-        	pa_simple_free(s);
 
-    	//strcpy(&buffer,'empty');
-	
-//////////////////////////////////////////////////////////////////////////////	
-	 
-
-	  strcpy(buffer,buf);
-	  ret = sendto(sockfd, &buffer, BUF_SIZE, 0, (struct sockaddr *) &addr, sizeof(addr));  
+	  ret = sendto(sockfd, &buf, BUF_SIZE, 0, (struct sockaddr *) &addr, sizeof(addr));  
 	  if (ret < 0) {  
-	   printf("Error sending data!\n\t-%s", buffer);  
+	   printf("Error sending data!\n\t-%s", buf);  
 	  }
 
 	  
-	  /*
-	  ret = recvfrom(sockfd, &buffer, BUF_SIZE, 0, NULL, NULL);  
-	  
-	  if (ret < 0) {  
-	   printf("Error receiving data!\n");    
-	  } else {
-
-	  printf("%s\n", buffer);
-	  	}  
-	*/
 	}
 
 	 return 0;    
